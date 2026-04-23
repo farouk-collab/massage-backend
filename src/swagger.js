@@ -8,12 +8,8 @@ const swaggerDocument = {
   },
   servers: [
     {
-      url: 'http://localhost:10000/api',
-      description: 'Local development server',
-    },
-    {
-      url: 'https://massage-backend-qvf7.onrender.com/api',
-      description: 'Render production server',
+      url: '/api',
+      description: 'Current server',
     },
   ],
   tags: [
@@ -37,10 +33,14 @@ const swaggerDocument = {
         type: 'object',
         required: ['email', 'password'],
         properties: {
-          email: { type: 'string', example: 'client@example.com' },
-          password: { type: 'string', example: 'StrongPassword123!' },
-          firstName: { type: 'string', example: 'David' },
-          lastName: { type: 'string', example: 'Massage' },
+          email: {
+            type: 'string',
+            format: 'email',
+            example: 'votre-email@gmail.com',
+          },
+          password: { type: 'string', example: 'VotreMotDePasse123!' },
+          firstName: { type: 'string', example: 'VotrePrenom' },
+          lastName: { type: 'string', example: 'VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
         },
       },
@@ -48,33 +48,60 @@ const swaggerDocument = {
         type: 'object',
         required: ['email', 'password'],
         properties: {
-          email: { type: 'string', example: 'client@example.com' },
-          password: { type: 'string', example: 'StrongPassword123!' },
+          email: {
+            type: 'string',
+            format: 'email',
+            example: 'votre-email@gmail.com',
+          },
+          password: { type: 'string', example: 'VotreMotDePasse123!' },
         },
       },
       ResetPasswordRequest: {
         type: 'object',
         required: ['email'],
         properties: {
-          email: { type: 'string', example: 'client@example.com' },
+          email: {
+            type: 'string',
+            format: 'email',
+            example: 'votre-email@gmail.com',
+          },
           redirectTo: {
             type: 'string',
-            example: 'http://localhost:3000/reset-password',
+            example:
+              'https://massage-backend-qvf7.onrender.com/reset-password',
           },
         },
       },
       AuthenticatedUser: {
         type: 'object',
         properties: {
-          id: { type: 'string', example: '33f3f7c8-3b17-4a71-a95d-d8ec4e4dd123' },
-          email: { type: 'string', example: 'client@example.com' },
-          firstName: { type: 'string', example: 'David' },
-          lastName: { type: 'string', example: 'Massage' },
+          id: {
+            type: 'string',
+            example: '860a7d89-c29f-4672-9dc7-8afa991defda',
+          },
+          email: { type: 'string', example: 'votre-email@gmail.com' },
+          firstName: { type: 'string', example: 'VotrePrenom' },
+          lastName: { type: 'string', example: 'VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
-          address: { type: 'string', example: '12 rue de Paris, 75000 Paris' },
+          address: { type: 'string', example: 'Votre adresse' },
           emailConfirmedAt: { type: 'string', nullable: true },
           createdAt: { type: 'string', nullable: true },
           updatedAt: { type: 'string', nullable: true },
+        },
+      },
+      RegisterSuccessResponse: {
+        type: 'object',
+        properties: {
+          message: {
+            type: 'string',
+            example: 'Client registered successfully.',
+          },
+          user: { $ref: '#/components/schemas/AuthenticatedUser' },
+          session: {
+            type: 'object',
+            nullable: true,
+            additionalProperties: true,
+          },
         },
       },
       AuthSuccessResponse: {
@@ -102,19 +129,19 @@ const swaggerDocument = {
       CreateProfileRequest: {
         type: 'object',
         properties: {
-          firstName: { type: 'string', example: 'David' },
-          lastName: { type: 'string', example: 'Massage' },
+          firstName: { type: 'string', example: 'VotrePrenom' },
+          lastName: { type: 'string', example: 'VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
-          address: { type: 'string', example: '12 rue de Paris, 75000 Paris' },
+          address: { type: 'string', example: 'Votre adresse' },
         },
       },
       UpdateProfileRequest: {
         type: 'object',
         properties: {
-          firstName: { type: 'string', example: 'David' },
-          lastName: { type: 'string', example: 'Massage' },
+          firstName: { type: 'string', example: 'VotrePrenom' },
+          lastName: { type: 'string', example: 'VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
-          address: { type: 'string', example: '12 rue de Paris, 75000 Paris' },
+          address: { type: 'string', example: 'Votre adresse' },
         },
       },
       CreateSubscriptionRequest: {
@@ -205,7 +232,9 @@ const swaggerDocument = {
             description: 'Client registered successfully',
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/AuthSuccessResponse' },
+                schema: {
+                  $ref: '#/components/schemas/RegisterSuccessResponse',
+                },
               },
             },
           },
