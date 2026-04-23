@@ -1,8 +1,15 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+function readEnv(name) {
+  const value = process.env[name];
+  if (typeof value !== 'string') return '';
+
+  return value.trim().replace(/^['"]|['"]$/g, '');
+}
+
+const supabaseUrl = readEnv('SUPABASE_URL');
+const supabaseAnonKey = readEnv('SUPABASE_ANON_KEY');
+const supabaseServiceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');
 
 function hasSupabaseConfig() {
   return Boolean(supabaseUrl && supabaseAnonKey && supabaseServiceRoleKey);
