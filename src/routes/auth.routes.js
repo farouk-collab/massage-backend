@@ -5,12 +5,22 @@ const {
   getSupabaseTokenClient,
 } = require('../config/supabase');
 const { requireAuth } = require('../middleware/auth.middleware');
+const {
+  normalizeEmail,
+  normalizeString,
+  sanitizeProfile,
+} = require('../utils/auth.utils');
 
 const router = express.Router();
 
 router.post('/register', async (req, res, next) => {
   try {
-    const { email, password, firstName, lastName, phone } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const password =
+      typeof req.body.password === 'string' ? req.body.password : '';
+    const firstName = normalizeString(req.body.firstName);
+    const lastName = normalizeString(req.body.lastName);
+    const phone = normalizeString(req.body.phone);
 
     if (!email || !password) {
       return res
@@ -18,18 +28,17 @@ router.post('/register', async (req, res, next) => {
         .json({ message: 'email and password are required.' });
     }
 
-    const supabasePublic = getSupabasePublicClient();
     const supabaseAdmin = getSupabaseAdminClient();
+    const supabasePublic = getSupabasePublicClient();
 
-    const { data, error } = await supabasePublic.auth.signUp({
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      options: {
-        data: {
-          first_name: firstName || null,
-          last_name: lastName || null,
-          phone: phone || null,
-        },
+      email_confirm: true,
+      user_metadata: {
+        first_name: firstName || null,
+        last_name: lastName || null,
+        phone: phone || null,
       },
     });
 
@@ -54,10 +63,20 @@ router.post('/register', async (req, res, next) => {
       }
     }
 
+    const { data: loginData, error: loginError } =
+      await supabasePublic.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+    if (loginError) {
+      return res.status(400).json({ message: loginError.message });
+    }
+
     return res.status(201).json({
       message: 'Client registered successfully.',
-      user: data.user,
-      session: data.session,
+      user: sanitizeProfile(data.user),
+      session: loginData.session,
     });
   } catch (error) {
     return next(error);
@@ -66,7 +85,9 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const password =
+      typeof req.body.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
       return res
@@ -86,8 +107,30 @@ router.post('/login', async (req, res, next) => {
 
     return res.status(200).json({
       message: 'Client logged in successfully.',
-      user: data.user,
+      user: sanitizeProfile(data.user),
       session: data.session,
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get('/me', requireAuth, async (req, res, next) => {
+  try {
+    const supabaseAdmin = getSupabaseAdminClient();
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', req.user.id)
+      .maybeSingle();
+
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+
+    return res.status(200).json({
+      message: 'Authenticated client loaded successfully.',
+      user: sanitizeProfile(req.user, data),
     });
   } catch (error) {
     return next(error);
@@ -111,7 +154,8 @@ router.post('/logout', requireAuth, async (req, res, next) => {
 
 router.post('/reset-password', async (req, res, next) => {
   try {
-    const { email, redirectTo } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const redirectTo = normalizeString(req.body.redirectTo);
 
     if (!email) {
       return res.status(400).json({ message: 'email is required.' });

@@ -8,8 +8,12 @@ const swaggerDocument = {
   },
   servers: [
     {
-      url: 'http://localhost:3002/api',
+      url: 'http://localhost:10000/api',
       description: 'Local development server',
+    },
+    {
+      url: 'https://massage-backend-qvf7.onrender.com/api',
+      description: 'Render production server',
     },
   ],
   tags: [
@@ -54,6 +58,42 @@ const swaggerDocument = {
             type: 'string',
             example: 'http://localhost:3000/reset-password',
           },
+        },
+      },
+      AuthenticatedUser: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', example: '33f3f7c8-3b17-4a71-a95d-d8ec4e4dd123' },
+          email: { type: 'string', example: 'client@example.com' },
+          firstName: { type: 'string', example: 'David' },
+          lastName: { type: 'string', example: 'Massage' },
+          phone: { type: 'string', example: '+33 6 00 00 00 00' },
+          address: { type: 'string', example: '12 rue de Paris, 75000 Paris' },
+          emailConfirmedAt: { type: 'string', nullable: true },
+          createdAt: { type: 'string', nullable: true },
+          updatedAt: { type: 'string', nullable: true },
+        },
+      },
+      AuthSuccessResponse: {
+        type: 'object',
+        properties: {
+          message: { type: 'string', example: 'Client logged in successfully.' },
+          user: { $ref: '#/components/schemas/AuthenticatedUser' },
+          session: {
+            type: 'object',
+            nullable: true,
+            additionalProperties: true,
+          },
+        },
+      },
+      AuthMeResponse: {
+        type: 'object',
+        properties: {
+          message: {
+            type: 'string',
+            example: 'Authenticated client loaded successfully.',
+          },
+          user: { $ref: '#/components/schemas/AuthenticatedUser' },
         },
       },
       CreateProfileRequest: {
@@ -101,7 +141,14 @@ const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'Client registered successfully' },
+          201: {
+            description: 'Client registered successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/AuthSuccessResponse' },
+              },
+            },
+          },
           400: { description: 'Validation or Supabase error' },
         },
       },
@@ -119,8 +166,33 @@ const swaggerDocument = {
           },
         },
         responses: {
-          200: { description: 'Client logged in successfully' },
+          200: {
+            description: 'Client logged in successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/AuthSuccessResponse' },
+              },
+            },
+          },
           401: { description: 'Invalid credentials' },
+        },
+      },
+    },
+    '/auth/me': {
+      get: {
+        tags: ['Auth'],
+        summary: 'Get the authenticated client from the JWT token',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Authenticated client returned successfully',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/AuthMeResponse' },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
         },
       },
     },
