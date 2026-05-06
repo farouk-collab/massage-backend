@@ -38,6 +38,8 @@ const swaggerDocument = {
       RegisterRequest: {
         type: 'object',
         required: ['email', 'password'],
+        description:
+          'Le backend accepte aussi les aliases FR: password | mot_passe | mot_de_passe, firstName | nom, phone | numero_tel | telephone.',
         properties: {
           email: {
             type: 'string',
@@ -45,14 +47,21 @@ const swaggerDocument = {
             example: 'votre-email@gmail.com',
           },
           password: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_passe: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_de_passe: { type: 'string', example: 'VotreMotDePasse123!' },
           firstName: { type: 'string', example: 'VotrePrenom' },
+          nom: { type: 'string', example: 'Votre Prenom VotreNom' },
           lastName: { type: 'string', example: 'VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
+          numero_tel: { type: 'string', example: '+33 6 00 00 00 00' },
+          telephone: { type: 'string', example: '+33 6 00 00 00 00' },
         },
       },
       LoginRequest: {
         type: 'object',
         required: ['email', 'password'],
+        description:
+          'Le backend accepte aussi les aliases FR: password | mot_passe | mot_de_passe.',
         properties: {
           email: {
             type: 'string',
@@ -60,6 +69,8 @@ const swaggerDocument = {
             example: 'votre-email@gmail.com',
           },
           password: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_passe: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_de_passe: { type: 'string', example: 'VotreMotDePasse123!' },
         },
       },
       ResetPasswordRequest: {
@@ -75,6 +86,20 @@ const swaggerDocument = {
             type: 'string',
             example:
               'https://massage-backend-qvf7.onrender.com/reset-password',
+          },
+        },
+      },
+      ChangePasswordRequest: {
+        type: 'object',
+        required: ['currentPassword', 'newPassword'],
+        properties: {
+          currentPassword: {
+            type: 'string',
+            example: 'AncienMotDePasse123!',
+          },
+          newPassword: {
+            type: 'string',
+            example: 'NouveauMotDePasse123!',
           },
         },
       },
@@ -317,6 +342,26 @@ const swaggerDocument = {
         responses: {
           200: { description: 'Email de reinitialisation demande' },
           400: { description: 'Erreur Supabase' },
+        },
+      },
+    },
+    '/auth/change-password': {
+      post: {
+        tags: ['Authentification'],
+        summary: 'Changer le mot de passe du client authentifie',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ChangePasswordRequest' },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Mot de passe change avec succes' },
+          400: { description: 'Requete invalide ou erreur Supabase' },
+          401: { description: 'Mot de passe actuel invalide ou non autorise' },
         },
       },
     },
