@@ -4,7 +4,7 @@ const swaggerDocument = {
     title: 'API Backend David Massage',
     version: '1.0.0',
     description:
-      'Backend Express + Supabase pour l authentification, les clients, les abonnements et les reservations.',
+      'Backend Express + Supabase pour l authentification, les clients, les abonnements et les réservations.',
   },
   servers: [
     {
@@ -39,7 +39,7 @@ const swaggerDocument = {
         type: 'object',
         required: ['email', 'password'],
         description:
-          'Le backend accepte aussi les aliases FR: password | mot_passe | mot_de_passe, firstName | nom, phone | numero_tel | telephone.',
+          'Le backend accepte aussi les alias FR : password | mot_passe | mot_de_passe, firstName | nom, phone | numero_tel | telephone.',
         properties: {
           email: {
             type: 'string',
@@ -61,7 +61,7 @@ const swaggerDocument = {
         type: 'object',
         required: ['email', 'password'],
         description:
-          'Le backend accepte aussi les aliases FR: password | mot_passe | mot_de_passe.',
+          'Le backend accepte aussi les alias FR : password | mot_passe | mot_de_passe.',
         properties: {
           email: {
             type: 'string',
@@ -125,7 +125,7 @@ const swaggerDocument = {
         properties: {
           message: {
             type: 'string',
-            example: 'Client inscrit avec succes.',
+            example: 'Client inscrit avec succès.',
           },
           user: { $ref: '#/components/schemas/AuthenticatedUser' },
           session: {
@@ -138,7 +138,7 @@ const swaggerDocument = {
       AuthSuccessResponse: {
         type: 'object',
         properties: {
-          message: { type: 'string', example: 'Client connecte avec succes.' },
+          message: { type: 'string', example: 'Client connecté avec succès.' },
           user: { $ref: '#/components/schemas/AuthenticatedUser' },
           session: {
             type: 'object',
@@ -152,7 +152,7 @@ const swaggerDocument = {
         properties: {
           message: {
             type: 'string',
-            example: 'Client authentifie charge avec succes.',
+            example: 'Client authentifié chargé avec succès.',
           },
           user: { $ref: '#/components/schemas/AuthenticatedUser' },
         },
@@ -182,6 +182,7 @@ const swaggerDocument = {
             type: 'boolean',
             example: true,
             description: 'Utiliser une des 10 places de l offre limitee.',
+            
           },
         },
       },
@@ -241,7 +242,7 @@ const swaggerDocument = {
         summary: 'Verifier l etat du service',
         responses: {
           200: {
-            description: 'Etat de l API',
+            description: 'État de l API',
           },
         },
       },
@@ -260,7 +261,7 @@ const swaggerDocument = {
         },
         responses: {
           201: {
-            description: 'Client inscrit avec succes',
+            description: 'Client inscrit avec succès',
             content: {
               'application/json': {
                 schema: {
@@ -287,7 +288,7 @@ const swaggerDocument = {
         },
         responses: {
           200: {
-            description: 'Client connecte avec succes',
+            description: 'Client connecté avec succès',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/AuthSuccessResponse' },
@@ -301,36 +302,36 @@ const swaggerDocument = {
     '/auth/me': {
       get: {
         tags: ['Authentification'],
-        summary: 'Recuperer le client authentifie via le token JWT',
+        summary: 'Récupérer le client authentifié via le token JWT',
         security: [{ bearerAuth: [] }],
         responses: {
           200: {
-            description: 'Client authentifie retourne avec succes',
+            description: 'Client authentifié retourné avec succès',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/AuthMeResponse' },
               },
             },
           },
-          401: { description: 'Non autorise' },
+          401: { description: 'Non autorisé' },
         },
       },
     },
     '/auth/logout': {
       post: {
         tags: ['Authentification'],
-        summary: 'Deconnecter le client courant',
+        summary: 'Déconnecter le client courant',
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Client deconnecte avec succes' },
-          401: { description: 'Non autorise' },
+          200: { description: 'Client déconnecté avec succès' },
+          401: { description: 'Non autorisé' },
         },
       },
     },
     '/auth/reset-password': {
       post: {
         tags: ['Authentification'],
-        summary: 'Envoyer un email de reinitialisation du mot de passe',
+        summary: 'Envoyer un email de réinitialisation du mot de passe',
         requestBody: {
           required: true,
           content: {
@@ -340,7 +341,7 @@ const swaggerDocument = {
           },
         },
         responses: {
-          200: { description: 'Email de reinitialisation demande' },
+          200: { description: 'Email de réinitialisation demandé' },
           400: { description: 'Erreur Supabase' },
         },
       },
@@ -348,7 +349,7 @@ const swaggerDocument = {
     '/auth/change-password': {
       post: {
         tags: ['Authentification'],
-        summary: 'Changer le mot de passe du client authentifie',
+        summary: 'Changer le mot de passe du client authentifié',
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
@@ -359,16 +360,16 @@ const swaggerDocument = {
           },
         },
         responses: {
-          200: { description: 'Mot de passe change avec succes' },
-          400: { description: 'Requete invalide ou erreur Supabase' },
-          401: { description: 'Mot de passe actuel invalide ou non autorise' },
+          200: { description: 'Mot de passe changé avec succès' },
+          400: { description: 'Requête invalide ou erreur Supabase' },
+          401: { description: 'Mot de passe actuel invalide ou non autorisé' },
         },
       },
     },
     '/clients/me': {
       post: {
         tags: ['Clients'],
-        summary: 'Creer le profil du client courant',
+        summary: 'Créer le profil du client courant',
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: false,
@@ -379,22 +380,22 @@ const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'Profil cree avec succes' },
-          401: { description: 'Non autorise' },
+          201: { description: 'Profil créé avec succès' },
+          401: { description: 'Non autorisé' },
         },
       },
       get: {
         tags: ['Clients'],
-        summary: 'Recuperer le profil du client courant',
+        summary: 'Récupérer le profil du client courant',
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Profil retourne avec succes' },
+          200: { description: 'Profil retourné avec succès' },
           404: { description: 'Profil introuvable' },
         },
       },
       put: {
         tags: ['Clients'],
-        summary: 'Mettre a jour le profil du client courant',
+        summary: 'Mettre à jour le profil du client courant',
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
@@ -405,15 +406,15 @@ const swaggerDocument = {
           },
         },
         responses: {
-          200: { description: 'Profil mis a jour avec succes' },
-          401: { description: 'Non autorise' },
+          200: { description: 'Profil mis à jour avec succès' },
+          401: { description: 'Non autorisé' },
         },
       },
     },
     '/subscriptions': {
       post: {
         tags: ['Abonnements'],
-        summary: 'Acheter ou creer un abonnement de 5 seances',
+        summary: 'Acheter ou créer un abonnement de 5 séances',
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: false,
@@ -424,11 +425,11 @@ const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'Abonnement cree avec succes' },
-          401: { description: 'Non autorise' },
+          201: { description: 'Abonnement créé avec succès' },
+          401: { description: 'Non autorisé' },
           409: {
             description:
-              'Offre limitee indisponible ou abonnement actif deja existant',
+              'Offre limitée indisponible ou abonnement actif déjà existant',
           },
         },
       },
@@ -436,7 +437,7 @@ const swaggerDocument = {
     '/subscriptions/me': {
       get: {
         tags: ['Abonnements'],
-        summary: 'Recuperer l abonnement actif du client',
+        summary: 'Récupérer l abonnement actif du client',
         security: [{ bearerAuth: [] }],
         responses: {
           200: {
@@ -452,19 +453,19 @@ const swaggerDocument = {
               },
             },
           },
-          404: { description: 'Aucun abonnement actif trouve' },
+          404: { description: 'Aucun abonnement actif trouvé' },
         },
       },
     },
     '/subscriptions/me/deduct': {
       patch: {
         tags: ['Abonnements'],
-        summary: 'Deduire une seance de l abonnement actif',
+        summary: 'Déduire une séance de l abonnement actif',
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Seance deduite avec succes' },
-          404: { description: 'Aucun abonnement actif trouve' },
-          409: { description: 'Aucune seance restante' },
+          200: { description: 'Séance déduite avec succès' },
+          404: { description: 'Aucun abonnement actif trouvé' },
+          409: { description: 'Aucune séance restante' },
         },
       },
     },
@@ -472,16 +473,16 @@ const swaggerDocument = {
       get: {
         tags: ['Abonnements'],
         summary:
-          'Recuperer les places restantes de l offre des 10 premiers clients',
+          'Récupérer les places restantes de l offre des 10 premiers clients',
         responses: {
-          200: { description: 'Disponibilite de l offre limitee' },
+          200: { description: 'Disponibilité de l offre limitée' },
         },
       },
     },
     '/slots': {
       get: {
         tags: ['Creneaux'],
-        summary: 'Lister les creneaux de massage disponibles',
+        summary: 'Lister les créneaux de massage disponibles',
         parameters: [
           {
             name: 'date',
@@ -496,7 +497,7 @@ const swaggerDocument = {
         ],
         responses: {
           200: {
-            description: 'Liste des creneaux',
+            description: 'Liste des créneaux',
             content: {
               'application/json': {
                 schema: {
@@ -517,7 +518,7 @@ const swaggerDocument = {
     '/bookings': {
       post: {
         tags: ['Reservations'],
-        summary: 'Reserver un creneau de massage',
+        summary: 'Réserver un créneau de massage',
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
@@ -528,26 +529,26 @@ const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'Reservation creee avec succes' },
-          400: { description: 'Requete invalide' },
-          409: { description: 'Creneau indisponible ou abonnement epuise' },
+          201: { description: 'Réservation créée avec succès' },
+          400: { description: 'Requête invalide' },
+          409: { description: 'Créneau indisponible ou abonnement épuisé' },
         },
       },
     },
     '/bookings/me': {
       get: {
         tags: ['Reservations'],
-        summary: 'Lister les reservations du client courant',
+        summary: 'Lister les réservations du client courant',
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Reservations du client' },
+          200: { description: 'Réservations du client' },
         },
       },
     },
     '/bookings/{id}': {
       delete: {
         tags: ['Reservations'],
-        summary: 'Annuler une reservation et liberer le creneau',
+        summary: 'Annuler une réservation et libérer le créneau',
         security: [{ bearerAuth: [] }],
         parameters: [
           {
@@ -558,11 +559,11 @@ const swaggerDocument = {
           },
         ],
         responses: {
-          200: { description: 'Reservation annulee avec succes' },
-          404: { description: 'Reservation introuvable' },
+          200: { description: 'Réservation annulée avec succès' },
+          404: { description: 'Réservation introuvable' },
           409: {
             description:
-              'Une reservation validee ne peut pas etre annulee',
+              'Une réservation validée ne peut pas être annulée',
           },
         },
       },
