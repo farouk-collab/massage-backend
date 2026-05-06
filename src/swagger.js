@@ -38,6 +38,8 @@ const swaggerDocument = {
       RegisterRequest: {
         type: 'object',
         required: ['email', 'password'],
+        description:
+          'Le backend accepte aussi les alias FR : password | mot_passe | mot_de_passe, firstName | nom, phone | numero_tel | telephone.',
         properties: {
           email: {
             type: 'string',
@@ -45,14 +47,21 @@ const swaggerDocument = {
             example: 'votre-email@gmail.com',
           },
           password: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_passe: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_de_passe: { type: 'string', example: 'VotreMotDePasse123!' },
           firstName: { type: 'string', example: 'VotrePrenom' },
+          nom: { type: 'string', example: 'Votre Prenom VotreNom' },
           lastName: { type: 'string', example: 'VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
+          numero_tel: { type: 'string', example: '+33 6 00 00 00 00' },
+          telephone: { type: 'string', example: '+33 6 00 00 00 00' },
         },
       },
       LoginRequest: {
         type: 'object',
         required: ['email', 'password'],
+        description:
+          'Le backend accepte aussi les alias FR : password | mot_passe | mot_de_passe.',
         properties: {
           email: {
             type: 'string',
@@ -60,6 +69,8 @@ const swaggerDocument = {
             example: 'votre-email@gmail.com',
           },
           password: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_passe: { type: 'string', example: 'VotreMotDePasse123!' },
+          mot_de_passe: { type: 'string', example: 'VotreMotDePasse123!' },
         },
       },
       ResetPasswordRequest: {
@@ -75,6 +86,47 @@ const swaggerDocument = {
             type: 'string',
             example:
               'https://massage-backend-qvf7.onrender.com/reset-password',
+          },
+        },
+      },
+      ChangePasswordRequest: {
+        type: 'object',
+        required: ['currentPassword', 'newPassword'],
+        properties: {
+          currentPassword: {
+            type: 'string',
+            example: 'AncienMotDePasse123!',
+          },
+          newPassword: {
+            type: 'string',
+            example: 'NouveauMotDePasse123!',
+          },
+        },
+      },
+      PhoneNormalizationRequest: {
+        type: 'object',
+        properties: {
+          phone: { type: 'string', example: '06 12 34 56 78' },
+          numero_tel: { type: 'string', example: '0612345678' },
+          telephone: { type: 'string', example: '0033612345678' },
+          countryCode: { type: 'string', example: '+33' },
+          indicatif: { type: 'string', example: '+34' },
+        },
+      },
+      PhoneNormalizationResponse: {
+        type: 'object',
+        properties: {
+          message: { type: 'string', example: 'Telephone analyse avec succes.' },
+          phone: {
+            type: 'object',
+            properties: {
+              raw: { type: 'string', example: '06 12 34 56 78' },
+              normalized: { type: 'string', example: '+33612345678' },
+              national: { type: 'string', example: '612345678' },
+              countryCode: { type: 'string', example: '+33', nullable: true },
+              detectedCountry: { type: 'string', example: 'France', nullable: true },
+              isInternational: { type: 'boolean', example: true },
+            },
           },
         },
       },
@@ -134,20 +186,38 @@ const swaggerDocument = {
       },
       CreateProfileRequest: {
         type: 'object',
+        description:
+          'Payload souple : firstName | first_name | prenom, lastName | last_name, nom, phone | numero_tel | telephone, address | adresse.',
         properties: {
           firstName: { type: 'string', example: 'VotrePrenom' },
+          prenom: { type: 'string', example: 'VotrePrenom' },
           lastName: { type: 'string', example: 'VotreNom' },
+          nom: { type: 'string', example: 'Votre Prenom VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
+          numero_tel: { type: 'string', example: '06 00 00 00 00' },
+          telephone: { type: 'string', example: '0033600000000' },
           address: { type: 'string', example: 'Votre adresse' },
+          adresse: { type: 'string', example: 'Votre adresse' },
+          countryCode: { type: 'string', example: '+33' },
+          indicatif: { type: 'string', example: '+34' },
         },
       },
       UpdateProfileRequest: {
         type: 'object',
+        description:
+          'Mise a jour partielle souple. Les champs absents ne sont pas ecrases.',
         properties: {
           firstName: { type: 'string', example: 'VotrePrenom' },
+          prenom: { type: 'string', example: 'VotrePrenom' },
           lastName: { type: 'string', example: 'VotreNom' },
+          nom: { type: 'string', example: 'Votre Prenom VotreNom' },
           phone: { type: 'string', example: '+33 6 00 00 00 00' },
+          numero_tel: { type: 'string', example: '06 00 00 00 00' },
+          telephone: { type: 'string', example: '0034600000000' },
           address: { type: 'string', example: 'Votre adresse' },
+          adresse: { type: 'string', example: 'Votre adresse' },
+          countryCode: { type: 'string', example: '+33' },
+          indicatif: { type: 'string', example: '+34' },
         },
       },
       CreateSubscriptionRequest: {
@@ -320,6 +390,26 @@ const swaggerDocument = {
         },
       },
     },
+    '/auth/change-password': {
+      post: {
+        tags: ['Authentification'],
+        summary: 'Changer le mot de passe du client authentifie',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ChangePasswordRequest' },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Mot de passe change avec succes' },
+          400: { description: 'Requete invalide ou erreur Supabase' },
+          401: { description: 'Mot de passe actuel invalide ou non autorise' },
+        },
+      },
+    },
     '/clients/me': {
       post: {
         tags: ['Clients'],
@@ -362,6 +452,30 @@ const swaggerDocument = {
         responses: {
           200: { description: 'Profil mis a jour avec succes' },
           401: { description: 'Non autorise' },
+        },
+      },
+    },
+    '/clients/phone/normalize': {
+      post: {
+        tags: ['Clients'],
+        summary: 'Normaliser automatiquement un numero de telephone',
+        requestBody: {
+          required: false,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/PhoneNormalizationRequest' },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Telephone normalise avec succes',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/PhoneNormalizationResponse' },
+              },
+            },
+          },
         },
       },
     },

@@ -11,7 +11,37 @@ const { hasSupabaseConfig } = require('./config/supabase');
 
 const app = express();
 
-app.use(cors());
+function readAllowedOrigins() {
+  const rawOrigins = process.env.CORS_ORIGINS || process.env.FRONTEND_URL || '';
+
+  return rawOrigins
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+const allowedOrigins = readAllowedOrigins();
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.length === 0) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.get('/', (_req, res) => {
