@@ -39,18 +39,6 @@
           }
         },
         {
-          "name": "POST /auth/register (aliases FR)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"client{{$timestamp}}@gmail.com\",\n  \"mot_passe\": \"StrongPass123!\",\n  \"nom\": \"Client Test\",\n  \"numero_tel\": \"+33600000000\"\n}"
-            },
-            "url": "{{baseUrl}}/auth/register"
-          }
-        },
-        {
           "name": "POST /auth/login",
           "request": {
             "method": "POST",
@@ -58,18 +46,6 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"client@example.com\",\n  \"password\": \"StrongPass123!\"\n}"
-            },
-            "url": "{{baseUrl}}/auth/login"
-          }
-        },
-        {
-          "name": "POST /auth/login (aliases FR)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"client@example.com\",\n  \"mot_passe\": \"StrongPass123!\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }
@@ -100,19 +76,6 @@
               "raw": "{\n  \"email\": \"client@example.com\"\n}"
             },
             "url": "{{baseUrl}}/auth/reset-password"
-          }
-        },
-        {
-          "name": "POST /auth/change-password",
-          "request": {
-            "method": "POST",
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"StrongPass123!\",\n  \"newPassword\": \"NewStrongPass123!\"\n}"
-            },
-            "url": "{{baseUrl}}/auth/change-password"
           }
         }
       ]

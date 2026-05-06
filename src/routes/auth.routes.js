@@ -13,55 +13,19 @@ const {
 
 const router = express.Router();
 
-function readFirstString(...values) {
-  for (const value of values) {
-    if (typeof value === 'string' && value.trim()) {
-      return value.trim();
-    }
-  }
-
-  return '';
-}
-
-function splitFullName(fullName) {
-  const normalized = normalizeString(fullName);
-
-  if (!normalized) {
-    return { firstName: '', lastName: '' };
-  }
-
-  const [firstName, ...rest] = normalized.split(/\s+/);
-  return {
-    firstName: firstName || '',
-    lastName: rest.join(' '),
-  };
-}
-
 router.post('/register', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
-    const password = readFirstString(
-      req.body.password,
-      req.body.mot_passe,
-      req.body.mot_de_passe,
-    );
-    const fullName = readFirstString(req.body.nom, req.body.name);
-    const splitName = splitFullName(fullName);
-    const firstName = readFirstString(req.body.firstName, splitName.firstName);
-    const lastName = readFirstString(req.body.lastName, splitName.lastName);
-    const phone = readFirstString(
-      req.body.phone,
-      req.body.numero_tel,
-      req.body.telephone,
-    );
+    const password =
+      typeof req.body.password === 'string' ? req.body.password : '';
+    const firstName = normalizeString(req.body.firstName);
+    const lastName = normalizeString(req.body.lastName);
+    const phone = normalizeString(req.body.phone);
 
     if (!email || !password) {
       return res
         .status(400)
-        .json({
-          message:
-            'email and password are required. Supported aliases: mot_passe, mot_de_passe.',
-        });
+        .json({ message: 'email and password are required.' });
     }
 
     const supabaseAdmin = getSupabaseAdminClient();
@@ -111,12 +75,7 @@ router.post('/register', async (req, res, next) => {
 
     return res.status(201).json({
       message: 'Client registered successfully.',
-      user: {
-        sub: data.user?.id || null,
-        ...sanitizeProfile(data.user),
-      },
-      access_token: loginData.session?.access_token || null,
-      refresh_token: loginData.session?.refresh_token || null,
+      user: sanitizeProfile(data.user),
       session: loginData.session,
     });
   } catch (error) {
@@ -127,19 +86,13 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
-    const password = readFirstString(
-      req.body.password,
-      req.body.mot_passe,
-      req.body.mot_de_passe,
-    );
+    const password =
+      typeof req.body.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
       return res
         .status(400)
-        .json({
-          message:
-            'email and password are required. Supported aliases: mot_passe, mot_de_passe.',
-        });
+        .json({ message: 'email and password are required.' });
     }
 
     const supabasePublic = getSupabasePublicClient();
@@ -154,12 +107,7 @@ router.post('/login', async (req, res, next) => {
 
     return res.status(200).json({
       message: 'Client logged in successfully.',
-      user: {
-        sub: data.user?.id || null,
-        ...sanitizeProfile(data.user),
-      },
-      access_token: data.session?.access_token || null,
-      refresh_token: data.session?.refresh_token || null,
+      user: sanitizeProfile(data.user),
       session: data.session,
     });
   } catch (error) {
@@ -228,73 +176,6 @@ router.post('/reset-password', async (req, res, next) => {
     return res
       .status(200)
       .json({ message: 'Password reset email requested successfully.' });
-  } catch (error) {
-    return next(error);
-  }
-});
-
-router.post('/change-password', requireAuth, async (req, res, next) => {
-  try {
-    const currentPassword = readFirstString(
-      req.body.currentPassword,
-      req.body.current_password,
-      req.body.ancien_mot_passe,
-    );
-    const newPassword = readFirstString(
-      req.body.newPassword,
-      req.body.new_password,
-      req.body.password,
-      req.body.mot_passe,
-      req.body.nouveau_mot_passe,
-    );
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        message:
-          'currentPassword and newPassword are required. Supported aliases: current_password, ancien_mot_passe, new_password, mot_passe, nouveau_mot_passe.',
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        message: 'New password must be at least 6 characters long.',
-      });
-    }
-
-    if (!req.user?.email) {
-      return res.status(400).json({
-        message: 'Authenticated user email is missing.',
-      });
-    }
-
-    const supabasePublic = getSupabasePublicClient();
-    const { error: loginError } = await supabasePublic.auth.signInWithPassword({
-      email: req.user.email,
-      password: currentPassword,
-    });
-
-    if (loginError) {
-      return res.status(401).json({
-        message: 'Current password is incorrect.',
-      });
-    }
-
-    const supabaseTokenClient = getSupabaseTokenClient(req.accessToken);
-    const { data, error } = await supabaseTokenClient.auth.updateUser({
-      password: newPassword,
-    });
-
-    if (error) {
-      return res.status(400).json({ message: error.message });
-    }
-
-    return res.status(200).json({
-      message: 'Password changed successfully.',
-      user: {
-        sub: data.user?.id || null,
-        ...sanitizeProfile(data.user, null),
-      },
-    });
   } catch (error) {
     return next(error);
   }

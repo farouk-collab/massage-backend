@@ -10,7 +10,6 @@ SUPABASE_URL=https://ejqshvcdiicluyasfoxh.supabase.co
 SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
 SUPABASE_RESET_PASSWORD_REDIRECT_URL=https://massage-backend-qvf7.onrender.com/reset-password
-CORS_ORIGINS=https://votre-frontend.vercel.app,http://localhost:3000
 ```
 
 ## Paiement et emails, a brancher ensuite
